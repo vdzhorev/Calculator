@@ -7,13 +7,13 @@ import java.awt.event.*;
 import java.util.*;
 
 
-public class CalculatorGUI implements ActionListener {
+public class CalculatorGUI implements ActionListener, KeyListener {
 
   private JFrame calculatorFrame;
   private JTextField textField;
   private List<JButton> numbersButtons = new ArrayList<>();
   private JButton addButton, subtractButton, multiplyButton, divideButton,
-                  decimalButton, equalsButton, deleteButton, clearButton;
+      decimalButton, equalsButton, deleteButton, clearButton;
   private List<JButton> functionButtons = new ArrayList<>();
   private Font calculatorFont = new Font("TlwgTypewriter", Font.BOLD, 30);
   private JPanel calculatorPanel;
@@ -31,6 +31,7 @@ public class CalculatorGUI implements ActionListener {
     calculatorFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     calculatorFrame.setSize(420, 550);
     calculatorFrame.setLayout(null);
+    calculatorFrame.setFocusable(true);
 
     addButton = new JButton("+");
     subtractButton = new JButton("-");
@@ -94,6 +95,7 @@ public class CalculatorGUI implements ActionListener {
     calculatorFrame.add(calculatorPanel);
     calculatorFrame.add(deleteButton);
     calculatorFrame.add(clearButton);
+    calculatorFrame.addKeyListener(this);
     calculatorFrame.add(textField);
     calculatorFrame.setVisible(true);
 
@@ -123,6 +125,38 @@ public class CalculatorGUI implements ActionListener {
     } else {
       textField.setText(textField.getText() + sourceButton.getText());
     }
+  }
+
+  @Override
+  public void keyTyped(KeyEvent keyEvent) {
+
+  }
+
+  @Override
+  public void keyPressed(KeyEvent keyEvent) {
+    char keyChar = keyEvent.getKeyChar();
+    if (Character.isDigit(keyChar) || keyChar == '.') {
+      textField.setText(textField.getText() + keyChar);
+    } else if (keyChar == '+' || keyChar == '-' || keyChar == '*' || keyChar == '/') {
+      operator = keyChar;
+      number1 = Double.parseDouble(textField.getText());
+      textField.setText("");
+    } else if (keyChar == '=' || keyEvent.getKeyCode() == KeyEvent.VK_ENTER) {
+      number2 = Double.parseDouble(textField.getText());
+      result = CalculatorLogic.performOperation(number1, number2, operator);
+      textField.setText(String.valueOf(result));
+      number1 = result;
+    } else if (keyEvent.getKeyCode() == KeyEvent.VK_BACK_SPACE) {
+      String text = textField.getText();
+      if (text.length() > 0) {
+        textField.setText(text.substring(0, text.length() - 1));
+      }
+    }
+  }
+
+  @Override
+  public void keyReleased(KeyEvent keyEvent) {
+
   }
 }
 
